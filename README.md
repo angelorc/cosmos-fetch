@@ -1,4 +1,4 @@
-# packageName
+# cosmos-fetch
 
 <!-- automd:badges color=yellow -->
 
@@ -7,7 +7,7 @@
 
 <!-- /automd -->
 
-This is my package description.
+An advanced fetch for cosmos blockchains. Support `cosmos-registry` caching, retries, and more.
 
 ## Usage
 
@@ -39,27 +39,58 @@ deno install cosmos-fetch
 
 Import:
 
-<!-- automd:jsimport cjs cdn name="pkg" -->
+<!-- automd:jsimport cjs cdn name="cosmos-fetch" imports="cfetch" -->
 
 **ESM** (Node.js, Bun, Deno)
 
 ```js
-import {} from "pkg";
+import { cfetch } from "cosmos-fetch";
 ```
 
 **CommonJS** (Legacy Node.js)
 
 ```js
-const {} = require("pkg");
+const { cfetch } = require("cosmos-fetch");
 ```
 
 **CDN** (Deno, Bun and Browsers)
 
 ```js
-import {} from "https://esm.sh/pkg";
+import { cfetch } from "https://esm.sh/cosmos-fetch";
 ```
 
 <!-- /automd -->
+
+## Examples
+
+### Without caching
+
+```js
+import { cfetch } from "cosmos-fetch";
+
+// Fetch staking params from cosmoshub
+const response = await cfetch("/cosmos/staking/v1beta1/params");
+
+// Fetch staking params from bitsong
+const response = await cfetch("/cosmos/staking/v1beta1/params", {
+  chain: "bitsong",
+});
+```
+
+### With caching (highly recommended)
+
+```js
+import { cfetch, createStorage, fsDriver } from "cosmos-fetch";
+
+// Use local filesystem as cache
+const cache = createStorage({ driver: fsDriver({ base: "./.cache" }) });
+
+// Fetch staking params from cosmoshub
+const response = await cfetch("/cosmos/staking/v1beta1/params", {
+  chain: "bitsong",
+  cache,
+});
+```
 
 ## Development
 
