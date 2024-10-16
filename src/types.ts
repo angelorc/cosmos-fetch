@@ -1,22 +1,35 @@
-import { z } from "zod";
+import { FetchOptions } from "ofetch";
+import { StorageValue, Storage } from "unstorage";
 
 export interface CreateCosmosFetchOptions {
-  chainName: string;
+  chain: string;
+  fetch?: FetchOptions;
+  cache?: Storage<StorageValue> | undefined;
 }
 
-export interface Pagination {
-  next_key: string;
-  total: string;
+export type Endpoint = { url: string; latency: number; isDown: boolean };
+
+export type BlacklistedItem = { reason: string };
+
+export type CacheItem<T> = {
+  expires: number;
+  value: T;
+};
+
+export interface CacheOptions {
+  maxAge?: number;
 }
 
-export interface CosmosBankSupply {
-  denom: string;
-  amount: string;
-}
+export type LatencyResponse = {
+  url: string;
+  latency: number;
+  isDown: boolean;
+};
 
-export interface CosmosBankSupplyResponse {
-  supply: CosmosBankSupply[];
-  pagination: Pagination;
+export interface CalculateLatencyOptions {
+  fetch?: FetchOptions;
+  cache?: {
+    storage?: Storage<StorageValue>;
+    options?: CacheOptions;
+  };
 }
-
-export type GithubFileName = 'chain' | 'assetlist'

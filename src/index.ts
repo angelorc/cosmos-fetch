@@ -1,23 +1,93 @@
-import { FetchOptions, ofetch } from "ofetch";
-import { CreateCosmosFetchOptions } from "./types";
-
-export {
+import { $fetch, FetchRequest } from "ofetch";
+import {
+  BlacklistedItem,
+  CacheItem,
   CreateCosmosFetchOptions,
-  Pagination,
-  CosmosBankSupply,
-  CosmosBankSupplyResponse
+  Endpoint,
 } from "./types";
+import { calculateLatency, chain, sortByLatency, stripEndSlash } from "./utils";
+import { createStorage } from "unstorage";
 
-export { chain } from "./utils";
+export * from "./types";
+export * from "./utils";
 
-export function createCosmosFetch(options: CreateCosmosFetchOptions) {
+export async function cfetch<T>(
+  request: FetchRequest,
+  options?: CreateCosmosFetchOptions,
+): Promise<T> {
   options = {
-    chainName: "bitsong",
+    ...options,
+    chain: options?.chain || "cosmoshub",
+    fetch: {
+      ...options?.fetch,
+      timeout: options?.fetch?.timeout || 500,
+      retry: options?.fetch?.retry || 3,
+      retryDelay: options?.fetch?.retryDelay || 100,
+    },
+    cache: options?.cache || createStorage(),
   };
 
-  const fetchOptions: FetchOptions = {
-    baseURL: `https://lcd.explorebitsong.com`,
+  const chainInfo = await chain(options.chain, options.cache, { maxAge: 100 });
+  if (!chainInfo) {
+    throw new Error("Invalid chain name");
   }
 
-  return ofetch.create(fetchOptions)
+  const lcdWithLatency = await Promise.all(
+    chainInfo
+      .apis!.rest!.map((api) => api.address)
+      .map(
+        (lcd) =>
+          calculateLatency(lcd, {
+            fetch: { timeout: 1000 },
+            cache: { storage: options.cache, options: { maxAge: 100 } },
+          }) || { url: stripEndSlash(lcd), latency: 9999, isDown: true },
+      ),
+  );
+
+  const endpoints = sortByLatency(
+    lcdWithLatency.filter(
+      (endpoint) => endpoint?.url !== undefined,
+    ) as Endpoint[],
+  ).filter((endpoint) => !endpoint.isDown);
+
+  for (const endpoint of endpoints) {
+    const blacklistedItem = await options.cache!.getItem<
+      CacheItem<BlacklistedItem>
+    >(`blacklisted:${endpoint.url}`);
+
+    if (blacklistedItem) {
+      if (blacklistedItem.expires < Date.now()) {
+        console.log(`remove expired cache blacklist for ${endpoint.url}`);
+        await options.cache!.removeItem(`blacklisted:${endpoint.url}`);
+      } else {
+        console.log(`use cached blacklist for ${endpoint.url}`);
+        continue;
+      }
+    }
+
+    options.fetch = {
+      ...options.fetch,
+      baseURL: endpoint.url,
+    };
+
+    try {
+      console.log(`try to fetch from ${endpoint.url}`);
+      console.log(`request: ${options.fetch.baseURL}${request}`);
+      return (await $fetch(request, options.fetch)) as T;
+    } catch {
+      console.error(`failed to fetch from ${endpoint.url}`);
+
+      await options.cache!.setItem<CacheItem<BlacklistedItem>>(
+        `blacklisted:${endpoint.url}`,
+        {
+          expires: Date.now() + 60 * 60 * 1000, // 1 hour
+          value: { reason: "down" },
+        },
+      );
+    }
+  }
+
+  throw new Error("All nodes are down");
 }
+
+export { createStorage } from "unstorage";

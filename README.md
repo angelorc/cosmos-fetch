@@ -2,8 +2,8 @@
 
 <!-- automd:badges color=yellow -->
 
-[![npm version](https://img.shields.io/npm/v/packageName?color=yellow)](https://npmjs.com/package/packageName)
-[![npm downloads](https://img.shields.io/npm/dm/packageName?color=yellow)](https://npmjs.com/package/packageName)
+[![npm version](https://img.shields.io/npm/v/cosmos-fetch?color=yellow)](https://npmjs.com/package/cosmos-fetch)
+[![npm downloads](https://img.shields.io/npm/dm/cosmos-fetch?color=yellow)](https://npm.chart.dev/cosmos-fetch)
 
 <!-- /automd -->
 
@@ -17,19 +17,22 @@ Install package:
 
 ```sh
 # ✨ Auto-detect
-npx nypm install packageName
+npx nypm install cosmos-fetch
 
 # npm
-npm install packageName
+npm install cosmos-fetch
 
 # yarn
-yarn add packageName
+yarn add cosmos-fetch
 
 # pnpm
-pnpm install packageName
+pnpm install cosmos-fetch
 
 # bun
-bun install packageName
+bun install cosmos-fetch
+
+# deno
+deno install cosmos-fetch
 ```
 
 <!-- /automd -->
@@ -38,7 +41,7 @@ Import:
 
 <!-- automd:jsimport cjs cdn name="pkg" -->
 
-**ESM** (Node.js, Bun)
+**ESM** (Node.js, Bun, Deno)
 
 ```js
 import {} from "pkg";
@@ -76,11 +79,11 @@ import {} from "https://esm.sh/pkg";
 
 <!-- automd:contributors license=MIT -->
 
-Published under the [MIT](https://github.com/unjs/packageName/blob/main/LICENSE) license.
-Made by [community](https://github.com/unjs/packageName/graphs/contributors) 💛
+Published under the [MIT](https://github.com/angelorc/cosmos-fetch/blob/main/LICENSE) license.
+Made by [community](https://github.com/angelorc/cosmos-fetch/graphs/contributors) 💛
 <br><br>
-<a href="https://github.com/unjs/packageName/graphs/contributors">
-<img src="https://contrib.rocks/image?repo=unjs/packageName" />
+<a href="https://github.com/angelorc/cosmos-fetch/graphs/contributors">
+<img src="https://contrib.rocks/image?repo=angelorc/cosmos-fetch" />
 </a>
 
 <!-- /automd -->
