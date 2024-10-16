@@ -1,5 +1,5 @@
 import { cfetch, createStorage } from "../src";
-import { fsDriver } from "../src/drivers";
+import { fsDriver } from "../dist/drivers";
 
 const response = await cfetch("/cosmos/staking/v1beta1/params", {
   chain: "bitsong",

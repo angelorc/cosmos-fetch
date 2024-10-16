@@ -10,7 +10,6 @@ import { createStorage } from "unstorage";
 
 export * from "./types";
 export * from "./utils";
-export * from "./drivers";
 
 export async function cfetch<T>(
   request: FetchRequest,

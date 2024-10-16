@@ -7,6 +7,11 @@
   "sideEffects": false,
   "type": "module",
   "exports": {
+    "./drivers/*": {
+      "types": "./dist/drivers/*.d.ts",
+      "import": "./dist/drivers/*.mjs",
+      "require": "./dist/drivers/*.cjs"
+    },
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
@@ -33,11 +38,14 @@
   },
   "devDependencies": {
     "@types/node": "^22.1.0",
+    "@vercel/kv": "^3.0.0",
     "@vitest/coverage-v8": "^2.0.5",
     "automd": "^0.3.8",
     "changelogen": "^0.5.5",
     "eslint": "^9.8.0",
     "eslint-config-unjs": "^0.3.2",
+    "idb-keyval": "^6.2.1",
+    "ioredis": "^5.4.1",
     "jiti": "^2.0.0-beta.3",
     "json-schema-to-typescript": "^15.0.2",
     "prettier": "^3.3.3",
@@ -49,5 +57,21 @@
   "dependencies": {
     "ofetch": "^1.4.1",
     "unstorage": "^1.12.0"
+  },
+  "peerDependencies": {
+    "idb-keyval": "^6.2.1",
+    "ioredis": "^5.4.1",
+    "@vercel/kv": "^3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "idb-keyval": {
+      "optional": true
+    },
+    "ioredis": {
+      "optional": true
+    },
+    "@vercel/kv": {
+      "optional": true
+    }
   }
 }
