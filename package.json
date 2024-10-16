@@ -1,8 +1,8 @@
 {
-  "name": "packageName",
-  "version": "0.0.0",
-  "description": "",
-  "repository": "unjs/packageName",
+  "name": "cosmos-fetch",
+  "version": "0.0.2",
+  "description": "A fetch wrapper for cosmos blockchains",
+  "repository": "angelorc/cosmos-fetch",
   "license": "MIT",
   "sideEffects": false,
   "type": "module",
@@ -39,7 +39,6 @@
     "eslint": "^9.8.0",
     "eslint-config-unjs": "^0.3.2",
     "jiti": "^2.0.0-beta.3",
-    "json-refs": "^3.0.15",
     "json-schema-to-typescript": "^15.0.2",
     "prettier": "^3.3.3",
     "typescript": "^5.5.4",
@@ -48,8 +47,7 @@
   },
   "packageManager": "pnpm@9.7.0",
   "dependencies": {
-    "json-schema-to-zod": "^2.4.1",
     "ofetch": "^1.4.1",
-    "zod": "^3.23.8"
+    "unstorage": "^1.12.0"
   }
 }
