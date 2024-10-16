@@ -1,5 +1,19 @@
 # Changelog
 
+## v0.0.8
+
+[compare changes](https://github.com/angelorc/cosmos-fetch/compare/v0.0.7...v0.0.8)
+
+### 🏡 Chore
+
+- Add build configuration file ([ca9445c](https://github.com/angelorc/cosmos-fetch/commit/ca9445c))
+- Add cache providers, move to drivers ([2e85a34](https://github.com/angelorc/cosmos-fetch/commit/2e85a34))
+- Update build.config.ts ([090f152](https://github.com/angelorc/cosmos-fetch/commit/090f152))
+
+### ❤️ Contributors
+
+- Angelorc <angelo@rcstart.it>
+
 ## v0.0.7
 
 [compare changes](https://github.com/angelorc/cosmos-fetch/compare/v0.0.5...v0.0.7)
