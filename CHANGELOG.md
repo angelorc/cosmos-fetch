@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.0.9
+
+[compare changes](https://github.com/angelorc/cosmos-fetch/compare/v0.0.8...v0.0.9)
+
+### 🏡 Chore
+
+- Update README.md ([7a0e2c3](https://github.com/angelorc/cosmos-fetch/commit/7a0e2c3))
+
+### ❤️ Contributors
+
+- Angelorc <angelo@rcstart.it>
+
 ## v0.0.8
 
 [compare changes](https://github.com/angelorc/cosmos-fetch/compare/v0.0.7...v0.0.8)
