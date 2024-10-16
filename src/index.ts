@@ -8,7 +8,7 @@ export {
   CosmosBankSupplyResponse
 } from "./types";
 
-export { crfetch } from "./utils";
+export { chain } from "./utils";
 
 export function createCosmosFetch(options: CreateCosmosFetchOptions) {
   options = {

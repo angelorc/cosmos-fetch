@@ -1,6 +1,5 @@
 import { $fetch, FetchOptions } from "ofetch";
-import { crfetch } from "../src";
-
+import { chain } from "../src";
 
 async function calculateLatency(url: string, options: FetchOptions = {
     timeout: 500,
@@ -42,7 +41,7 @@ function sortByLatency(endpoints: {
 const main = async () => {
     const startTime = Date.now()
 
-    const response = await crfetch('bitsong', 'chain')
+    const response = await chain('bitsong')
     const lcds = response.apis?.rest?.map(api => api.address)
 
     const endpoints = sortByLatency(await Promise.all(lcds!.map(lcd => calculateLatency(lcd, { timeout: 1000 }))))
