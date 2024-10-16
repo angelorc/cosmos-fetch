@@ -1,5 +1,22 @@
 # Changelog
 
+## v0.0.7
+
+[compare changes](https://github.com/angelorc/cosmos-fetch/compare/v0.0.5...v0.0.7)
+
+### 💅 Refactors
+
+- Update package name and description ([32e5d37](https://github.com/angelorc/cosmos-fetch/commit/32e5d37))
+
+### 🏡 Chore
+
+- **release:** V0.0.6 ([16fda62](https://github.com/angelorc/cosmos-fetch/commit/16fda62))
+- Improve README ([3469937](https://github.com/angelorc/cosmos-fetch/commit/3469937))
+
+### ❤️ Contributors
+
+- Angelorc <angelo@rcstart.it>
+
 ## v0.0.6
 
 [compare changes](https://github.com/angelorc/cosmos-fetch/compare/v0.0.5...v0.0.6)
