@@ -91,18 +91,22 @@ const response = await cfetch("/cosmos/staking/v1beta1/params", {
 ### With caching (highly recommended)
 
 ```js
-import { cfetch, createStorage, fsDriver } from "cosmos-fetch";
+import { cfetch, createStorage } from "cosmos-fetch";
+import { fsDriver } from "cosmos-fetch/drivers";
 
 // Use local filesystem as cache
 const cache = createStorage({ driver: fsDriver({ base: "./.cache" }) });
 
 // Memory
+// import { memoryDriver } from "cosmos-fetch/drivers";
 // const cache = createStorage({ driver: memoryDriver() });
 
 // CloudFlare KV (binding)
+// import { cloudflareKVBindingDriver } from "cosmos-fetch/drivers";
 // const cache = createStorage({ driver: cloudflareKVBindingDriver({ binding: "STORAGE" }) });
 
 // Cloudflare KV (http)
+// import { cloudflareKVHTTPDriver } from "cosmos-fetch/drivers";
 // const cache = createStorage({ driver: cloudflareKVHTTPDriver({
 //    accountId: "my-account-id",
 //    namespaceId: "my-kv-namespace-id",
@@ -110,18 +114,23 @@ const cache = createStorage({ driver: fsDriver({ base: "./.cache" }) });
 //  }) });
 
 // CloudFlare R2 (binding)
+// import { cloudflareR2BindingDriver } from "cosmos-fetch/drivers";
 // const cache = createStorage({ driver: cloudflareR2BindingDriver({ binding: "STORAGE" }) });
 
 // HTTP Driver
+// import { httpDriver } from "cosmos-fetch/drivers";
 // const cache = createStorage({ driver: httpDriver({ base: "https://my-cache-server.com" }) });
 
 // LRUCache
+// import { lruCacheDriver } from "cosmos-fetch/drivers";
 // const cache = createStorage({ driver: lruCacheDriver({ max: 1000 }) });
 
 // Browser LocalStorage
+// import { localStorageDriver } from "cosmos-fetch/drivers";
 // const cache = createStorage({ driver: localStorageDriver({ base: "app:" }) });
 
 // Browser SessionStorage
+// import { sessionStorageDriver } from "cosmos-fetch/drivers";
 // const cache = createStorage({ driver: sessionStorageDriver({ base: "app:" }) });
 
 // Fetch staking params from cosmoshub
