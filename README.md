@@ -1,13 +1,24 @@
 # cosmos-fetch
 
-<!-- automd:badges color=yellow -->
+<!-- automd:badges name="cosmos-fetch" color=yellow license -->
 
 [![npm version](https://img.shields.io/npm/v/cosmos-fetch?color=yellow)](https://npmjs.com/package/cosmos-fetch)
 [![npm downloads](https://img.shields.io/npm/dm/cosmos-fetch?color=yellow)](https://npm.chart.dev/cosmos-fetch)
+[![license](https://img.shields.io/github/license/angelorc/cosmos-fetch?color=yellow)](https://github.com/angelorc/cosmos-fetch/blob/main/LICENSE)
 
 <!-- /automd -->
 
 An advanced fetch for cosmos blockchains. Support `cosmos-registry` caching, retries, and more.
+
+## Features
+
+- **Chain Registry**: supports chain registry for chain configurations.
+- **Node Latency**: supports node latency for selecting the fastest node.
+- **Caching**: supports multiple cache drivers like `fs`, `memory`, `cloudflare-kv`, `cloudflare-kv-http`, `cloudflare-r2`, `http`, `lru-cache`, `localstorage`, and `sessionstorage`.
+- **Retries**: supports retries on failed requests.
+- **Retry Delay**: supports retry delay on failed requests.
+- **Timeout**: supports timeout on requests.
+- ... and more
 
 ## Usage
 
@@ -85,6 +96,34 @@ import { cfetch, createStorage, fsDriver } from "cosmos-fetch";
 // Use local filesystem as cache
 const cache = createStorage({ driver: fsDriver({ base: "./.cache" }) });
 
+// Memory
+// const cache = createStorage({ driver: memoryDriver() });
+
+// CloudFlare KV (binding)
+// const cache = createStorage({ driver: cloudflareKVBindingDriver({ binding: "STORAGE" }) });
+
+// Cloudflare KV (http)
+// const cache = createStorage({ driver: cloudflareKVHTTPDriver({
+//    accountId: "my-account-id",
+//    namespaceId: "my-kv-namespace-id",
+//    apiToken: "supersecret-api-token",
+//  }) });
+
+// CloudFlare R2 (binding)
+// const cache = createStorage({ driver: cloudflareR2BindingDriver({ binding: "STORAGE" }) });
+
+// HTTP Driver
+// const cache = createStorage({ driver: httpDriver({ base: "https://my-cache-server.com" }) });
+
+// LRUCache
+// const cache = createStorage({ driver: lruCacheDriver({ max: 1000 }) });
+
+// Browser LocalStorage
+// const cache = createStorage({ driver: localStorageDriver({ base: "app:" }) });
+
+// Browser SessionStorage
+// const cache = createStorage({ driver: sessionStorageDriver({ base: "app:" }) });
+
 // Fetch staking params from cosmoshub
 const response = await cfetch("/cosmos/staking/v1beta1/params", {
   chain: "bitsong",
@@ -103,6 +142,7 @@ const response = await cfetch("/cosmos/staking/v1beta1/params", {
 - Enable [Corepack](https://github.com/nodejs/corepack) using `corepack enable`
 - Install dependencies using `pnpm install`
 - Run interactive tests using `pnpm dev`
+- Run playground using `pnpm play`
 
 </details>
 
