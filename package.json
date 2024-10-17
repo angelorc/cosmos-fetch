@@ -37,6 +37,7 @@
     "generate": "json2ts ./src/chain.schema.json > ./src/chain.schema.ts"
   },
   "devDependencies": {
+    "@types/babel__traverse": "^7.20.6",
     "@types/node": "^22.1.0",
     "@vercel/kv": "^3.0.0",
     "@vitest/coverage-v8": "^2.0.5",
@@ -49,6 +50,8 @@
     "jiti": "^2.0.0-beta.3",
     "json-schema-to-typescript": "^15.0.2",
     "prettier": "^3.3.3",
+    "protobufjs": "^7.4.0",
+    "ts-proto": "^2.2.4",
     "typescript": "^5.5.4",
     "unbuild": "^3.0.0-rc.7",
     "vitest": "^2.0.5"
@@ -59,9 +62,9 @@
     "unstorage": "^1.12.0"
   },
   "peerDependencies": {
+    "@vercel/kv": "^3.0.0",
     "idb-keyval": "^6.2.1",
-    "ioredis": "^5.4.1",
-    "@vercel/kv": "^3.0.0"
+    "ioredis": "^5.4.1"
   },
   "peerDependenciesMeta": {
     "idb-keyval": {
