@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.0.10
+
+[compare changes](https://github.com/angelorc/cosmos-fetch/compare/v0.0.9...v0.0.10)
+
+### 🏡 Chore
+
+- Debug logging ([7b2d335](https://github.com/angelorc/cosmos-fetch/commit/7b2d335))
+
+### ❤️ Contributors
+
+- Angelorc <angelo@rcstart.it>
+
 ## v0.0.9
 
 [compare changes](https://github.com/angelorc/cosmos-fetch/compare/v0.0.8...v0.0.9)
