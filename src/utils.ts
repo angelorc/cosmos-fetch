@@ -20,10 +20,8 @@ export const chain = async (
 
   if (cachedItem) {
     if (cachedItem.expires < Date.now()) {
-      console.debug(`remove expired cache for chain ${chainName}`);
       await cache.removeItem(`chain:${chainName}`);
     } else {
-      console.debug(`use cached chain info for ${chainName}`);
       return cachedItem.value;
     }
   }
@@ -92,10 +90,8 @@ export const calculateLatency = async (
 
   if (cachedItem) {
     if (cachedItem.expires < Date.now()) {
-      console.debug(`remove expired cache latency for ${url}`);
       await options.cache?.storage?.removeItem(`latency:${url}`);
     } else {
-      console.debug(`use cached latency for ${url}`);
       return cachedItem.value;
     }
   }

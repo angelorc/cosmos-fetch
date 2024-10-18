@@ -57,10 +57,8 @@ export async function cfetch<T>(
 
     if (blacklistedItem) {
       if (blacklistedItem.expires < Date.now()) {
-        console.debug(`remove expired cache blacklist for ${endpoint.url}`);
         await options.cache!.removeItem(`blacklisted:${endpoint.url}`);
       } else {
-        console.debug(`use cached blacklist for ${endpoint.url}`);
         continue;
       }
     }
@@ -71,8 +69,6 @@ export async function cfetch<T>(
     };
 
     try {
-      console.debug(`try to fetch from ${endpoint.url}`);
-      console.debug(`request: ${options.fetch.baseURL}${request}`);
       return (await $fetch(request, options.fetch)) as T;
     } catch {
       console.error(`failed to fetch from ${endpoint.url}`);
