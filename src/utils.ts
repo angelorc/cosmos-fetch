@@ -1,14 +1,20 @@
 import { $fetch, FetchOptions } from "ofetch";
 import { Chain } from "./chain.schema";
 import { createStorage } from "unstorage";
-import {
-  CacheItem,
-  CacheOptions,
-  CalculateLatencyOptions,
-  LatencyResponse,
-} from "./types";
+import type { CacheItem, CacheOptions, CacheParams } from "./types";
+import { Agent, request } from "undici";
 
-export const chain = async (
+const defaultFetchOptions: FetchOptions = {
+  timeout: 500,
+  retry: 3,
+  retryDelay: 100,
+};
+
+const defaultCacheOptions: CacheOptions = {
+  maxAge: 100,
+};
+
+export const getChain = async (
   chainName: string,
   cache = createStorage(),
   opts: CacheOptions = {},
@@ -45,100 +51,113 @@ export const chain = async (
   }
 };
 
-export function sortByLatency(
-  endpoints: {
-    url: string;
-    latency: number;
-    isDown: boolean;
-  }[],
-) {
-  return endpoints.sort((a, b) => a.latency - b.latency);
+export const restApisFromChainRegistry = async ({
+  chain,
+  include,
+  exclude,
+  cache,
+  sortByLatency
+}: {
+  chain?: string,
+  include?: string[],
+  exclude?: string[],
+  cache?: CacheParams;
+  sortByLatency?: boolean,
+}): Promise<string[]> => {
+  cache = {
+    storage: cache?.storage || createStorage(),
+    options: {
+      ...defaultCacheOptions,
+      ...cache?.options,
+    },
+  }
+  const ttl = (cache?.options?.maxAge ?? 0) * 1000;
+
+  let endpoints = include?.map((address) => stripEndSlash(address)) || []
+
+  if (chain) {
+    const cachedItem = await cache?.storage?.getItem<CacheItem<string[]>>(
+      `chain-registry:${chain}`,
+    );
+
+    if (cachedItem) {
+      if (cachedItem.expires < Date.now()) {
+        await cache?.storage?.removeItem(`chain-registry:${chain}`);
+      } else {
+        endpoints.push(...cachedItem.value.filter((address) => !endpoints.includes(address)))
+      }
+    } else {
+      const chainInfo = await getChain(chain);
+      if (chainInfo.apis?.rest) {
+        const urls = chainInfo.apis?.rest.map(({ address }) => stripEndSlash(address))
+
+        await cache?.storage?.setItem<CacheItem<string[]>>(`chain-registry:${chain}`, {
+          expires: Date.now() + ttl,
+          value: urls,
+        })
+
+        endpoints.push(...urls.filter((address) => !endpoints.includes(address)))
+      }
+    }
+  }
+
+  endpoints = endpoints.filter((address) => !exclude?.includes(stripEndSlash(address)))
+
+  if (sortByLatency) {
+    const cachedItem = await cache?.storage?.getItem<CacheItem<string[]>>(
+      `sort-by-latency:${chain}`,
+    );
+
+    if (cachedItem) {
+      if (cachedItem.expires < Date.now()) {
+        await cache?.storage?.removeItem(`sort-by-latency:${chain}`);
+      } else {
+        return cachedItem.value;
+      }
+    }
+
+    const urls = (await sortByLatencyFn(endpoints)).map(({ address }) => address)
+
+    await cache?.storage?.setItem<CacheItem<string[]>>(`sort-by-latency:${chain}`, {
+      expires: Date.now() + ttl,
+      value: urls,
+    })
+
+    return urls
+  }
+
+  return endpoints;
 }
 
-const defaultFetchOptions: FetchOptions = {
-  timeout: 500,
-  retry: 3,
-  retryDelay: 100,
-};
-
-const defaultCacheOptions: CacheOptions = {
-  maxAge: 100,
-};
-
-export const calculateLatency = async (
-  url: string,
-  options?: CalculateLatencyOptions,
-) => {
-  options = {
-    fetch: {
-      ...defaultFetchOptions,
-      ...options?.fetch,
-    },
-    cache: {
-      storage: options?.cache?.storage || createStorage(),
-      options: {
-        ...defaultCacheOptions,
-        ...options?.cache?.options,
-      },
-    },
-  };
-
-  const ttl = (options.cache?.options?.maxAge ?? 0) * 1000;
-  const cachedItem = await options.cache?.storage?.getItem<CacheItem<Chain>>(
-    `latency:${url}`,
-  );
-
-  if (cachedItem) {
-    if (cachedItem.expires < Date.now()) {
-      await options.cache?.storage?.removeItem(`latency:${url}`);
-    } else {
-      return cachedItem.value;
-    }
+export async function sortByLatencyFn(addresses: string[] | undefined): Promise<{
+  address: string;
+  latency: number;
+}[]> {
+  if (!addresses) {
+    throw new Error("No addresses provided");
   }
 
-  const startTime = Date.now();
-
-  try {
-    const node = new URL("/cosmos/bank/v1beta1/params", url);
-    const response = await $fetch.raw(node.toString(), options.fetch);
-    if (response.status !== 200) {
-      throw new Error("Invalid status code");
+  const promises = addresses.map(async (address) => {
+    try {
+      const start = Date.now();
+      await request(address, {
+        method: 'HEAD',
+        dispatcher: new Agent({
+          connectTimeout: 100,
+          headersTimeout: 100,
+          bodyTimeout: 500,
+        }),
+      });
+      const latency = Date.now() - start;
+      return { address, latency };
+    } catch {
+      return { address, latency: 9999 };
     }
-    const endTime = Date.now();
-    const latency = endTime - startTime;
-    const data: LatencyResponse = {
-      url: stripEndSlash(url),
-      latency,
-      isDown: false,
-    };
+  });
 
-    await options.cache?.storage?.setItem<CacheItem<LatencyResponse>>(
-      `latency:${url}`,
-      {
-        expires: Date.now() + ttl,
-        value: data,
-      },
-    );
-
-    return data;
-  } catch {
-    const data: LatencyResponse = {
-      url: stripEndSlash(url),
-      latency: 9999,
-      isDown: true,
-    };
-
-    await options.cache?.storage?.setItem<CacheItem<LatencyResponse>>(
-      `latency:${url}`,
-      {
-        expires: Date.now() + ttl,
-        value: data,
-      },
-    );
-
-    return data;
-  }
-};
+  const results = await Promise.all(promises);
+  return results.sort((a, b) => a.latency - b.latency);
+}
 
 export function stripEndSlash(url: string) {
   return url.replace(/\/$/, "");

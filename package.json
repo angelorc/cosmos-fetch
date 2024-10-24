@@ -56,12 +56,13 @@
   "packageManager": "pnpm@9.7.0",
   "dependencies": {
     "ofetch": "^1.4.1",
+    "undici": "^6.20.1",
     "unstorage": "^1.12.0"
   },
   "peerDependencies": {
+    "@vercel/kv": "^3.0.0",
     "idb-keyval": "^6.2.1",
-    "ioredis": "^5.4.1",
-    "@vercel/kv": "^3.0.0"
+    "ioredis": "^5.4.1"
   },
   "peerDependenciesMeta": {
     "idb-keyval": {
