@@ -1,6 +1,6 @@
 {
   "name": "cosmos-fetch",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "A fetch wrapper for cosmos blockchains",
   "repository": "angelorc/cosmos-fetch",
   "license": "MIT",
@@ -43,21 +43,21 @@
     "automd": "^0.3.8",
     "changelogen": "^0.5.5",
     "eslint": "^9.8.0",
-    "eslint-config-unjs": "^0.3.2",
+    "eslint-config-unjs": "^0.4.2",
     "idb-keyval": "^6.2.1",
     "ioredis": "^5.4.1",
-    "jiti": "^2.0.0-beta.3",
+    "jiti": "^2.4.2",
     "json-schema-to-typescript": "^15.0.2",
     "prettier": "^3.3.3",
-    "typescript": "^5.5.4",
-    "unbuild": "^3.0.0-rc.7",
+    "typescript": "5.5.4",
+    "unbuild": "^3.3.1",
     "vitest": "^2.0.5"
   },
   "packageManager": "pnpm@9.7.0",
   "dependencies": {
     "ofetch": "^1.4.1",
     "undici": "^6.20.1",
-    "unstorage": "^1.12.0"
+    "unstorage": "^1.14.4"
   },
   "peerDependencies": {
     "@vercel/kv": "^3.0.0",

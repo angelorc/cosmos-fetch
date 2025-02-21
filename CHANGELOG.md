@@ -1,5 +1,22 @@
 # Changelog
 
+## v0.0.12
+
+[compare changes](https://github.com/angelorc/cosmos-fetch/compare/v0.0.11...v0.0.12)
+
+### 🚀 Enhancements
+
+- Global refactor ([312fb6c](https://github.com/angelorc/cosmos-fetch/commit/312fb6c))
+- Add test cases for additional chains in index tests ([fc603c4](https://github.com/angelorc/cosmos-fetch/commit/fc603c4))
+
+### 🩹 Fixes
+
+- Increase cache maxAge from 100 to 86,400 seconds ([c379e08](https://github.com/angelorc/cosmos-fetch/commit/c379e08))
+
+### ❤️ Contributors
+
+- Angelorc <angelo@rcstart.it>
+
 ## v0.0.11
 
 [compare changes](https://github.com/angelorc/cosmos-fetch/compare/v0.0.10...v0.0.11)
