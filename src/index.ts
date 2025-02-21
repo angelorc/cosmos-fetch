@@ -27,7 +27,7 @@ export async function cfetch<T>(
     cache: options?.cache || createStorage(),
   };
 
-  const chainInfo = await chain(options.chain, options.cache, { maxAge: 100 });
+  const chainInfo = await chain(options.chain, options.cache, { maxAge: 86_400 });
   if (!chainInfo) {
     throw new Error("Invalid chain name");
   }
@@ -39,7 +39,7 @@ export async function cfetch<T>(
         (lcd) =>
           calculateLatency(lcd, {
             fetch: { timeout: 1000 },
-            cache: { storage: options.cache, options: { maxAge: 100 } },
+            cache: { storage: options.cache, options: { maxAge: 86_400 } },
           }) || { url: stripEndSlash(lcd), latency: 9999, isDown: true },
       ),
   );
