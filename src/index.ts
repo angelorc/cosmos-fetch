@@ -5,7 +5,7 @@ import {
   CreateCosmosFetchOptions,
   Endpoint,
 } from "./types";
-import { calculateLatency, chain, sortByLatency, stripEndSlash } from "./utils";
+import { calculateLatency, getChain, sortByLatency, stripEndSlash } from "./utils";
 import { createStorage } from "unstorage";
 
 export * from "./types";
@@ -13,77 +13,106 @@ export * from "./utils";
 
 export async function cfetch<T>(
   request: FetchRequest,
-  options?: CreateCosmosFetchOptions,
+  options?: CreateCosmosFetchOptions
 ): Promise<T> {
-  options = {
-    ...options,
-    chain: options?.chain || "cosmoshub",
+  const {
+    chain,
+    endpoints,
     fetch: {
-      ...options?.fetch,
-      timeout: options?.fetch?.timeout || 500,
-      retry: options?.fetch?.retry || 3,
-      retryDelay: options?.fetch?.retryDelay || 100,
-    },
-    cache: options?.cache || createStorage(),
-  };
+      timeout = 500,
+      retry = 3,
+      retryDelay = 100,
+    } = {},
+    cache = createStorage(),
+  } = options || {};
 
-  const chainInfo = await chain(options.chain, options.cache, { maxAge: 100 });
-  if (!chainInfo) {
-    throw new Error("Invalid chain name");
+  const _chain = chain ?? (endpoints?.length ? undefined : 'cosmoshub');
+  let _endpoints: Endpoint[];
+
+  if (endpoints?.length) {
+    _endpoints = endpoints.map(url => ({
+      url: stripEndSlash(url),
+      latency: 0,
+      isDown: false
+    }));
+  } else {
+    const chainInfo = await getChain(_chain!, cache, { maxAge: 100 });
+    if (!chainInfo) {
+      throw new Error("Invalid chain name");
+    }
+
+    const lcdWithLatency = await Promise.all(
+      chainInfo.apis?.rest?.map((api) => api.address).map(async (lcd) => {
+        const latencyResult = await calculateLatency(lcd, {
+          fetch: { timeout: 1000 },
+          cache: { storage: cache, options: { maxAge: 100 } },
+        });
+        
+        return latencyResult || { 
+          url: stripEndSlash(lcd), 
+          latency: 9999, 
+          isDown: true 
+        };
+      }) ?? []
+    );
+
+    _endpoints = sortByLatency(
+      lcdWithLatency.filter(
+        (endpoint): endpoint is Endpoint => endpoint?.url !== undefined
+      )
+    ).filter((endpoint) => !endpoint.isDown);
   }
 
-  const lcdWithLatency = await Promise.all(
-    chainInfo
-      .apis!.rest!.map((api) => api.address)
-      .map(
-        (lcd) =>
-          calculateLatency(lcd, {
-            fetch: { timeout: 1000 },
-            cache: { storage: options.cache, options: { maxAge: 100 } },
-          }) || { url: stripEndSlash(lcd), latency: 9999, isDown: true },
-      ),
-  );
-
-  const endpoints = sortByLatency(
-    lcdWithLatency.filter(
-      (endpoint) => endpoint?.url !== undefined,
-    ) as Endpoint[],
-  ).filter((endpoint) => !endpoint.isDown);
-
-  for (const endpoint of endpoints) {
-    const blacklistedItem = await options.cache!.getItem<
-      CacheItem<BlacklistedItem>
-    >(`blacklisted:${endpoint.url}`);
+  for (const endpoint of _endpoints) {
+    const cacheKey = `blacklisted:${endpoint.url}`;
+    const blacklistedItem = await cache.getItem<CacheItem<BlacklistedItem>>(cacheKey);
 
     if (blacklistedItem) {
       if (blacklistedItem.expires < Date.now()) {
-        await options.cache!.removeItem(`blacklisted:${endpoint.url}`);
+        await cache.removeItem(cacheKey);
       } else {
         continue;
       }
     }
 
-    options.fetch = {
-      ...options.fetch,
-      baseURL: endpoint.url,
-    };
-
     try {
-      return (await $fetch(request, options.fetch)) as T;
+      const response = await $fetch(request, {
+        timeout,
+        retry,
+        retryDelay,
+        baseURL: endpoint.url,
+      });
+      
+      return response as T;
     } catch {
       console.error(`failed to fetch from ${endpoint.url}`);
 
-      await options.cache!.setItem<CacheItem<BlacklistedItem>>(
-        `blacklisted:${endpoint.url}`,
-        {
-          expires: Date.now() + 60 * 60 * 1000, // 1 hour
-          value: { reason: "down" },
-        },
-      );
+      await cache.setItem<CacheItem<BlacklistedItem>>(cacheKey, {
+        expires: Date.now() + 60 * 60 * 1000, // 1 hour
+        value: { reason: "down" },
+      });
     }
   }
 
   throw new Error("All nodes are down");
+}
+
+export function createCosmosFetch(options?: CreateCosmosFetchOptions) {
+  return async function <T>(
+    request: FetchRequest,
+    override?: Partial<CreateCosmosFetchOptions>
+  ): Promise<T> {
+    const _options = {
+      ...options,
+      ...override,
+      fetch: {
+        ...options?.fetch,
+        ...override?.fetch,
+      },
+    };
+
+    return cfetch<T>(request, _options);
+  };
 }
 
 export { createStorage } from "unstorage";

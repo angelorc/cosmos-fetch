@@ -1,6 +1,16 @@
+import { FetchOptions } from "ofetch";
 import { StorageValue, Storage } from "unstorage";
 
+export interface CreateCosmosFetchOptions {
+  chain?: string;
+  fetch?: FetchOptions;
+  cache?: Storage<StorageValue> | undefined;
+  endpoints?: string[];
+}
+
 export type Endpoint = { url: string; latency: number; isDown: boolean };
+
+export type BlacklistedItem = { reason: string };
 
 export type CacheItem<T> = {
   expires: number;
@@ -11,15 +21,16 @@ export interface CacheOptions {
   maxAge?: number;
 }
 
-export interface CacheParams {
-  storage?: Storage<StorageValue>;
-  options?: CacheOptions;
+export type LatencyResponse = {
+  url: string;
+  latency: number;
+  isDown: boolean;
+};
+
+export interface CalculateLatencyOptions {
+  fetch?: FetchOptions;
+  cache?: {
+    storage?: Storage<StorageValue>;
+    options?: CacheOptions;
+  };
 }
-
-// export interface CreateCosmosFetchOptions {
-//   chain: string;
-//   fetch?: FetchOptions;
-//   cache?: Storage<StorageValue> | undefined;
-// }
-
-// export type BlacklistedItem = { reason: string };
