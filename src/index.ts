@@ -5,7 +5,12 @@ import {
   CreateCosmosFetchOptions,
   Endpoint,
 } from "./types";
-import { calculateLatency, getChain, sortByLatency, stripEndSlash } from "./utils";
+import {
+  calculateLatency,
+  getChain,
+  sortByLatency,
+  stripEndSlash,
+} from "./utils";
 import { createStorage } from "unstorage";
 
 export * from "./types";
@@ -13,27 +18,23 @@ export * from "./utils";
 
 export async function cfetch<T>(
   request: FetchRequest,
-  options?: CreateCosmosFetchOptions
+  options?: CreateCosmosFetchOptions,
 ): Promise<T> {
   const {
     chain,
     endpoints,
-    fetch: {
-      timeout = 500,
-      retry = 3,
-      retryDelay = 100,
-    } = {},
+    fetch: { timeout = 500, retry = 3, retryDelay = 100 } = {},
     cache = createStorage(),
   } = options || {};
 
-  const _chain = chain ?? (endpoints?.length ? undefined : 'cosmoshub');
+  const _chain = chain ?? (endpoints?.length ? undefined : "cosmoshub");
   let _endpoints: Endpoint[];
 
   if (endpoints?.length) {
-    _endpoints = endpoints.map(url => ({
+    _endpoints = endpoints.map((url) => ({
       url: stripEndSlash(url),
       latency: 0,
-      isDown: false
+      isDown: false,
     }));
   } else {
     const chainInfo = await getChain(_chain!, cache, { maxAge: 100 });
@@ -42,30 +43,35 @@ export async function cfetch<T>(
     }
 
     const lcdWithLatency = await Promise.all(
-      chainInfo.apis?.rest?.map((api) => api.address).map(async (lcd) => {
-        const latencyResult = await calculateLatency(lcd, {
-          fetch: { timeout: 1000 },
-          cache: { storage: cache, options: { maxAge: 100 } },
-        });
-        
-        return latencyResult || { 
-          url: stripEndSlash(lcd), 
-          latency: 9999, 
-          isDown: true 
-        };
-      }) ?? []
+      chainInfo.apis?.rest
+        ?.map((api) => api.address)
+        .map(async (lcd) => {
+          const latencyResult = await calculateLatency(lcd, {
+            fetch: { timeout: 1000 },
+            cache: { storage: cache, options: { maxAge: 100 } },
+          });
+
+          return (
+            latencyResult || {
+              url: stripEndSlash(lcd),
+              latency: 9999,
+              isDown: true,
+            }
+          );
+        }) ?? [],
     );
 
     _endpoints = sortByLatency(
       lcdWithLatency.filter(
-        (endpoint): endpoint is Endpoint => endpoint?.url !== undefined
-      )
+        (endpoint): endpoint is Endpoint => endpoint?.url !== undefined,
+      ),
     ).filter((endpoint) => !endpoint.isDown);
   }
 
   for (const endpoint of _endpoints) {
     const cacheKey = `blacklisted:${endpoint.url}`;
-    const blacklistedItem = await cache.getItem<CacheItem<BlacklistedItem>>(cacheKey);
+    const blacklistedItem =
+      await cache.getItem<CacheItem<BlacklistedItem>>(cacheKey);
 
     if (blacklistedItem) {
       if (blacklistedItem.expires < Date.now()) {
@@ -82,7 +88,7 @@ export async function cfetch<T>(
         retryDelay,
         baseURL: endpoint.url,
       });
-      
+
       return response as T;
     } catch {
       console.error(`failed to fetch from ${endpoint.url}`);
@@ -100,7 +106,7 @@ export async function cfetch<T>(
 export function createCosmosFetch(options?: CreateCosmosFetchOptions) {
   return async function <T>(
     request: FetchRequest,
-    override?: Partial<CreateCosmosFetchOptions>
+    override?: Partial<CreateCosmosFetchOptions>,
   ): Promise<T> {
     const _options = {
       ...options,

@@ -11,11 +11,11 @@ import {
 export const getChain = async (
   chainName: string,
   cache = createStorage(),
-  opts: CacheOptions = {}
+  opts: CacheOptions = {},
 ) => {
   const ttl = (opts.maxAge ?? 0) * 1000;
   const cachedItem = await cache.getItem<CacheItem<Chain>>(
-    `chain:${chainName}`
+    `chain:${chainName}`,
   );
 
   if (cachedItem) {
@@ -50,7 +50,7 @@ export function sortByLatency(
     url: string;
     latency: number;
     isDown: boolean;
-  }[]
+  }[],
 ) {
   return endpoints.sort((a, b) => a.latency - b.latency);
 }
@@ -67,7 +67,7 @@ const defaultCacheOptions: CacheOptions = {
 
 export const calculateLatency = async (
   url: string,
-  options?: CalculateLatencyOptions
+  options?: CalculateLatencyOptions,
 ) => {
   options = {
     fetch: {
@@ -85,7 +85,7 @@ export const calculateLatency = async (
 
   const ttl = (options.cache?.options?.maxAge ?? 0) * 1000;
   const cachedItem = await options.cache?.storage?.getItem<CacheItem<Chain>>(
-    `latency:${url}`
+    `latency:${url}`,
   );
 
   if (cachedItem) {
@@ -117,7 +117,7 @@ export const calculateLatency = async (
       {
         expires: Date.now() + ttl,
         value: data,
-      }
+      },
     );
 
     return data;
@@ -133,7 +133,7 @@ export const calculateLatency = async (
       {
         expires: Date.now() + ttl,
         value: data,
-      }
+      },
     );
 
     return data;
