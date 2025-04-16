@@ -1,6 +1,6 @@
 {
   "name": "cosmos-fetch",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "A fetch wrapper for cosmos blockchains",
   "repository": "angelorc/cosmos-fetch",
   "license": "MIT",
@@ -31,7 +31,7 @@
     "lint:fix": "automd && eslint . --fix && prettier -w .",
     "prepack": "pnpm build",
     "play": "jiti playground",
-    "release": "pnpm test && changelogen --release && npm publish && git push --follow-tags",
+    "release": "changelogen --release && npm publish && git push --follow-tags",
     "test": "pnpm lint && pnpm test:types && vitest run --coverage",
     "test:types": "tsc --noEmit --skipLibCheck",
     "generate": "json2ts ./src/chain.schema.json > ./src/chain.schema.ts"

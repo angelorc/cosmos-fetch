@@ -1,5 +1,22 @@
 # Changelog
 
+## v0.0.14
+
+[compare changes](https://github.com/angelorc/cosmos-fetch/compare/v0.0.12...v0.0.14)
+
+### 💅 Refactors
+
+- Remove createFetch function and related tests; streamline fetch logic ([b49fecd](https://github.com/angelorc/cosmos-fetch/commit/b49fecd))
+
+### 🏡 Chore
+
+- **release:** V0.0.12 ([0102fe3](https://github.com/angelorc/cosmos-fetch/commit/0102fe3))
+- Bump version to 0.0.13; update package.json and format code ([664119e](https://github.com/angelorc/cosmos-fetch/commit/664119e))
+
+### ❤️ Contributors
+
+- Angelorc <angelo@rcstart.it>
+
 ## v0.0.12
 
 [compare changes](https://github.com/angelorc/cosmos-fetch/compare/v0.0.11...v0.0.12)
