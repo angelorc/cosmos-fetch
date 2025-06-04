@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.0.15
+
+[compare changes](https://github.com/angelorc/cosmos-fetch/compare/v0.0.13...v0.0.15)
+
+### 🩹 Fixes
+
+- Reduce blacklist expiration time from 1 hour to 30 seconds for failed fetch attempts ([5153533](https://github.com/angelorc/cosmos-fetch/commit/5153533))
+
+### ❤️ Contributors
+
+- Angelorc <angelo@rcstart.it>
+
 ## v0.0.13
 
 [compare changes](https://github.com/angelorc/cosmos-fetch/compare/v0.0.14...v0.0.13)
