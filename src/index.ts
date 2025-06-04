@@ -94,7 +94,7 @@ export async function cfetch<T>(
       console.error(`failed to fetch from ${endpoint.url}`);
 
       await cache.setItem<CacheItem<BlacklistedItem>>(cacheKey, {
-        expires: Date.now() + 60 * 60 * 1000, // 1 hour
+        expires: Date.now() + 30 * 1000, // 30 seconds
         value: { reason: "down" },
       });
     }
